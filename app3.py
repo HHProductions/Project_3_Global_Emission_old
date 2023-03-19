@@ -27,12 +27,12 @@ app = Flask(__name__)
 def welcome():
     """List all available api routes."""
     return (
-        f"/api/v1.0/emissions<br/>"
+        f"/api/v1.0/emissions-items<br/>"
     )
     
 ##############
 
-@app.route("/api/v1.0/emissions")
+@app.route("/api/v1.0/emissions-items")
 def emission_list():
     # Create our session (link) from Python to the DB
     session = Session(engine)
