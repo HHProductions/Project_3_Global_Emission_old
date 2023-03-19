@@ -2,17 +2,21 @@ import sqlalchemy
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, func
+import json
 
 from flask import Flask, jsonify
 
 
 # Database Setup
 engine = create_engine("sqlite:///Resources/database3.sqlite")
-engine_1 = create_engine("sqlite:///Resources/new_db.sqlite")
+engine_1 = create_engine("sqlite:///Resources/new_database.sqlite")
 
+with open("Resources/countries.geojson") as json_file:
+    polygons_data = json.load(json_file)
 # reflect an existing database into a new model
 Base = automap_base()
 Base1 = automap_base()
+
 
 # reflect the tables
 Base.prepare(engine, reflect=True)
@@ -32,12 +36,23 @@ def welcome():
     """List all available api routes."""
     return (
         f"/api/v1.0/emissions<br/>"
-        f"/api/v1.0/countries<br/>"
+        f"/api/countries<br/>"
+        f"/api/polygons<br/>"
     )
     
 ##############
 
-@app.route("/api/v1.0/countries")
+@app.route("/api/polygons")
+def polygons_list():
+    response = jsonify(polygons_data)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+
+    return response
+
+
+
+
+@app.route("/api/countries")
 def country_list():
     session = Session(engine_1)
     # latitude,longitude,country,pop2023,growthRate,area,region,landAreaKm,totCO2_2017,totCO2_2020,co2PerCapita2017,co2PerCapita2020,rank,latlng
@@ -47,10 +62,30 @@ def country_list():
     session.close()
     
     all_data = []
-    for result in results:
-        all_data.append(result)
+    for i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12, i13, i14 in results:
         
-    return jsonify(all_data)
+        countries_dict = {}
+       
+        countries_dict["latitude"] = i1
+        countries_dict["longitude"] = i2
+        countries_dict["country"] = i3
+        countries_dict["pop2023"] = i4
+        countries_dict["growthRate"] = i5
+        countries_dict["area"] = i6
+        countries_dict["region"] = i7
+        countries_dict["landAreaKm"] = i8
+        countries_dict["totCO2_2017"] = i9
+        countries_dict["totCO2_2020"] = i10
+        countries_dict["co2PerCapita2017"] = i11
+        countries_dict["co2PerCapita2020"] = i12
+        countries_dict["rank"] = i13
+        countries_dict["latlng"] = i14
+        all_data.append(countries_dict)
+        
+    response = jsonify(all_data)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+        
 
     
 
@@ -105,7 +140,9 @@ def emission_list():
         emissions_dict["year_2020"] = i24
         all_emissions.append(emissions_dict)
 
-    return jsonify(all_emissions)
+    response = jsonify(all_emissions)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 ##############
 
 if __name__ == '__main__':
