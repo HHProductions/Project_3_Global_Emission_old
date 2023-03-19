@@ -21,7 +21,7 @@
 
 
 * Instructions: 
-1)How to run API
+1) How to run API
   Execute app.py and app3.py from the root of the repository
      ```sh 
     python3 app.py
