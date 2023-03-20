@@ -1,6 +1,5 @@
-
 // Use the D3 library to read in samples.json from the URL as follows
-url = "http://127.0.0.1:5000//api/v1.0/emissions";
+url = "http://127.0.0.1:5000/api/v1.0/emissions";
 
 // Fetch the JSON data and console log it
 let xValue = [2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020];
@@ -8,28 +7,30 @@ let xValue = [2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2
 d3.json(url).then(function(data){
     console.log(data);
 
-    // chart init
-    let yValue = [data[0].Year_2000,data[0].Year_2001,data[0].Year_2002,data[0].Year_2003,data[0].Year_2004,
-          data[0].Year_2005,data[0].Year_2006,data[0].Year_2007,data[0].Year_2008,data[0].Year_2009,
-          data[0].Year_2010,data[0].Year_2011,data[0].Year_2012,data[0].Year_2013,data[0].Year_2014,
-          data[0].Year_2015,data[0].Year_2016,data[0].Year_2017,data[0].Year_2018,data[0].Year_2019,data[0].Year_2020];
+  // chart init
+  let yValue = [data[0].Year_2000,data[0].Year_2001,data[0].Year_2002,data[0].Year_2003,data[0].Year_2004,
+      data[0].Year_2005,data[0].Year_2006,data[0].Year_2007,data[0].Year_2008,data[0].Year_2009,
+      data[0].Year_2010,data[0].Year_2011,data[0].Year_2012,data[0].Year_2013,data[0].Year_2014,
+      data[0].Year_2015,data[0].Year_2016,data[0].Year_2017,data[0].Year_2018,data[0].Year_2019,data[0].Year_2020];
 
-    let country = data[0].country;
+  let country = data[0].country;
 
-    let total_emission_2020 = 0
-    for (let i = 0; i< data.length; i++) {
-      total_emission_2020 = parseInt(total_emission_2020 + data[i].Year_2020)
-      console.log(total_emission_2020)
-    }
+  let total_emission_2020 = 0
+  for (let i = 0; i< data.length; i++) {
+    total_emission_2020 = parseInt(total_emission_2020 + data[i].Year_2020)
+    console.log(total_emission_2020)
+  }
 
-    let restworld_emission = total_emission_2020 - parseInt(data[0].Year_2020);
-    let values = [data[0].Year_2020, restworld_emission];
+  let restworld_emission = total_emission_2020 - parseInt(data[0].Year_2020);
+  let values = [data[0].Year_2020, restworld_emission];
 
-    emission_trend(xValue, yValue, country);
-    emission_percentage (values, country)
-    dropdown_value (data);
-    top_5_2020(data,donut_chart)
+  emission_trend(xValue, yValue, country);
+  emission_percentage (values, country)
+  dropdown_value (data);
+  top_5_2020(data,donut_chart)
 });
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // line chart function
 function emission_trend (xValue, yValue, country) {
@@ -37,7 +38,7 @@ function emission_trend (xValue, yValue, country) {
         x: xValue,
         y: yValue,
         mode: "lines+markers",
-        name: country + 'Total Emission Trend kilotonnes' 
+        name: country + 'Total Emission Trend kilotonnes',
     };
     var layout = {
         title: country + ' Total Emission Trend<br>(Unit: kilotonnes)'
@@ -87,13 +88,14 @@ function getData() {
         console.log(index)
       }
   }
+
   // chart for dropdown box
   let yValue = [data[index].Year_2000,data[index].Year_2001,data[index].Year_2002,data[index].Year_2003,data[index].Year_2004,
-          data[index].Year_2005,data[index].Year_2006,data[index].Year_2007,data[index].Year_2008,data[index].Year_2009,
-          data[index].Year_2010,data[index].Year_2011,data[index].Year_2012,data[index].Year_2013,data[index].Year_2014,
-          data[index].Year_2015,data[index].Year_2016,data[index].Year_2017,data[index].Year_2018,data[index].Year_2019,data[index].Year_2020];
+    data[index].Year_2005,data[index].Year_2006,data[index].Year_2007,data[index].Year_2008,data[index].Year_2009,
+    data[index].Year_2010,data[index].Year_2011,data[index].Year_2012,data[index].Year_2013,data[index].Year_2014,
+    data[index].Year_2015,data[index].Year_2016,data[index].Year_2017,data[index].Year_2018,data[index].Year_2019,data[index].Year_2020];
 
-    let country = data[index].country;
+  let country = data[index].country;
 
     let total_emission_2020 = parseInt('0')
     for (let i = 0; i< data.length; i++) {
@@ -242,6 +244,7 @@ function getData_1() {
   });
 
 }
+
 // function: chart.js donut chart
 function donut_chart (data, labels) {
   var ctx = document.getElementById('donut_chart').getContext('2d');
@@ -283,62 +286,58 @@ function donut_chart (data, labels) {
   });
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Donut Chart
-let CO2_data = [16, 15, 12, 6, 5, 4, 42];
-let CH4_data = [27, 11, 25, 8, 1, 3, 25];
-let elements = ['US', 'China', 'European Union', 'Russian Federation', 'Brazil', 'India', 'Rest of World' ]
+// function: chart.js bar chart
+function bar_chart(data,labels) {
+  var ctx = document.getElementById('bar_chart').getContext('2d');
+  const existingChart = Chart.getChart(ctx);
 
-function GH_Contributor(data1, data2, labels) {
-var data = [{
-    values: data1,
-    labels: labels,
-    domain: {column: 0},
-    name: 'CH4',
-    hoverinfo: 'label+percent+name',
-    hole: .4,
-    type: 'pie'
-  },{
-    values: data2,
-    labels: labels,
-    text: 'CO2',
-    textposition: 'inside',
-    domain: {column: 1},
-    name: 'CO2 Emissions',
-    hoverinfo: 'label+percent+name',
-    hole: .4,
-    type: 'pie'
-  }];
-  
-  var layout = {
-    title: 'Emissions Resources',
-    annotations: [
-      {
-        font: {
-          size: 20
-        },
-        showarrow: false,
-        text: 'CH4',
-        x: 0.17,
-        y: 0.5
-      },
-      {
-        font: {
-          size: 20
-        },
-        showarrow: false,
-        text: 'CO2',
-        x: 0.82,
-        y: 0.5
+  if (existingChart) {
+    // If a Chart object already exists, destroy it
+    existingChart.destroy();
+  }
+
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      data: {
+        datasets: [{
+          axis: 'y',
+          label: 'My First Dataset',
+          data: data,
+          fill: false,
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.2)',
+            'rgba(255, 159, 64, 0.2)',
+            'rgba(255, 205, 86, 0.2)',
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(153, 102, 255, 0.2)',
+            'rgba(201, 203, 207, 0.2)'
+          ],
+          borderColor: [
+            'rgb(255, 99, 132)',
+            'rgb(255, 159, 64)',
+            'rgb(255, 205, 86)',
+            'rgb(75, 192, 192)',
+            'rgb(54, 162, 235)',
+            'rgb(153, 102, 255)',
+            'rgb(201, 203, 207)'
+          ],
+        borderWidth: 1
+        }]
       }
-    ],
-    height: 400,
-    width: 600,
-    showlegend: false,
-    grid: {rows: 1, columns: 2}
-  };
-  
-  Plotly.newPlot('Donuts', data, layout);
-};
-
-//GH_Contributor(CH4_data, CO2_data, elements)
+    },
+    options: {
+        cutoutPercentage: 70,
+        responsive: false,
+        legend: {
+          position: 'bottom',
+          labels: {
+            fontColor: 'black',
+            fontSize: 14
+          }
+        }
+    }
+  })
+}
