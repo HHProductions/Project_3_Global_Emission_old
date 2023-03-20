@@ -1,8 +1,10 @@
+// links for our flask API request
 const url = 'http://localhost:5000/api/countries'
 
-
+  // // Create map function to create our map
 function createMap(countryMarkers, top_10, otherMarkers) {
 
+    // making a request to map APIs and put it in variables
     let street = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 });
@@ -12,14 +14,10 @@ let natGeo =L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Na
 	maxZoom: 16
 });
 
-          
+          // making layers for our info check boxes
           let countries = L.layerGroup(countryMarkers);
           let top_10_countries = L.layerGroup(top_10);
           let other_info = L.layerGroup(otherMarkers);
-          
-          
-          
-          
           
           // Create a baseMaps object.
           let baseMaps = {
@@ -41,7 +39,6 @@ let myMap = L.map("map", {
   layers: [street, countries, top_10_countries, other_info]
 });
 
-//       radius: markerSize(data[i].totCO2_2020)
 // Pass our map layers to our layer control.
 // Add the layer control to the map.
 L.control.layers(baseMaps, overlayMaps, {
@@ -50,18 +47,23 @@ L.control.layers(baseMaps, overlayMaps, {
 
 }
 
+    // function to create markers
 function createMarkers(response){
   
+      // making an empty list to store markers
   let countryMarkers = [];
   let top_10 = [];
   let population = [];
   
+  // for loop to go through data
   for (let i = 0; i < response.length; i++) {
     
+    // writing string for markers
     var marker = "<strong>Name: </strong>" + response[i].country + "<br><strong>Total Year 2020 Emissions (mmt):</strong> " + response[i].totCO2_2020 + "<br><strong> Rank: </strong>" + response[i].rank;
     
     var latlng = L.latLng(response[i].latitude, response[i].longitude);
     
+    // making marker and pushing it into list
     countryMarkers.push(
       L.circle(latlng, {
         stroke: false,
@@ -73,6 +75,8 @@ function createMarkers(response){
       );
     }
     
+
+    // same process for second marker
     for (let i = 0; i < response.length; i++) {
       
       var marker = "<strong>Name: </strong>" + response[i].country + "<br><strong>Total Year 2020 Emissions (mmt): </strong>" + response[i].totCO2_2020 + "<br><strong> Rank: </strong>" + response[i].rank;
@@ -93,6 +97,7 @@ function createMarkers(response){
         }
         
         
+        // same process for third marker
         for (let i = 0; i < response.length; i++) {
           
           var pop_in_1000 = response[i].pop2023/1000
@@ -112,25 +117,8 @@ function createMarkers(response){
           }
           createMap(countryMarkers, top_10, population);
         }
+        // making API call to our chloropleth data source
         d3.json(url).then(createMarkers);
         
         
         
-        
-        
-        
-        
-        
-        
-        // function x(poly_data){
-        
-        //   ch_layer = L.geoJson(JSON.parse(poly_data));
-        //   return ch_layer;
-        // }
-        
-        // y = x();
-        // console.log(y);
-        
-        // fetch(poly_url)
-        // .then(response => response.text())
-        // .then(poly_data => x(poly_data))
