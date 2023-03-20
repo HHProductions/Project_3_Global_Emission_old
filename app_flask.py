@@ -5,32 +5,27 @@ from sqlalchemy import create_engine, func
 
 from flask import Flask, jsonify
 
-from flask import Flask
-
 app = Flask(__name__)
 
-# Database Setup
+# Database total emissions Setup
 engine = create_engine("sqlite:///Resources/database.sqlite")
-
-
 # reflect an existing database into a new model
 Base = automap_base()
 # reflect the tables
 Base.prepare(autoload_with=engine)
-
 # Save reference to the table
 Emission = Base.classes.total_emission
+#################
 
 # Flask Setup
 app = Flask(__name__)
 
 # Flask Routes
-
 @app.route("/")
 def welcome():
     """List all available api routes."""
     return (
-        f"/api/v1.0/emissions<br/>"
+        f"/api/v1.0/emissions<br>"
     )
     
 ##############
