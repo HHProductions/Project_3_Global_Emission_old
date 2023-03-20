@@ -1,26 +1,35 @@
+// links for our flask API request
 const poly_url = 'http://localhost:5000/api/polygons'
 const url_1 = 'http://localhost:5000/api/countries'
 
 
+// making request to API, get data and making a function
 d3.json(poly_url).then(function(data_poly) {
-    // // Create a new choropleth layer.
-    
+
+  
+  // // Create map function to create our map
     function createMap(countryMarkers, data_countries, data_poly){
-        let street = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+
+  // making a request to map API and put it in a variable
+      let street = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         });
-        // console.log(data_countries);
-        
+
+        // making a layer of markers
         let countries = L.layerGroup(countryMarkers);
         
+        // basemap layer
         let baseMaps = {
             "Street Map": street,
         };
         
+        // overlay for markers
         let overlayMaps = {
             "Country Emmisions": countries,
         };
         
+
+        // making a map
         let myMap = L.map("map-id", {
             center: [	31.1231, 70.7790],
             zoom: 3,
@@ -28,11 +37,12 @@ d3.json(poly_url).then(function(data_poly) {
         });
         
         
+        // making control layer
         L.control.layers(baseMaps, overlayMaps, {
             collapsed: true
-        }).addTo(myMap);
+            }).addTo(myMap);
 
-
+        // making a choloropleth map
         geojson = L.choropleth(data_poly, {
 
             // Define which property in the features to use.
@@ -46,6 +56,7 @@ d3.json(poly_url).then(function(data_poly) {
             // q for quartile, e for equidistant, k for k-means
             mode: "q",
             style: {
+
               // Border colour
               color: "#fff",
               weight: 1,
@@ -56,10 +67,10 @@ d3.json(poly_url).then(function(data_poly) {
             onEachFeature: function(feature, layer) {
               layer.bindPopup("<strong>Countries: </strong> " + feature.properties.ADMIN + "<strong><br />Emissions: </strong>" + feature.properties.totCO2_2020);
             }
-          }).addTo(myMap);
+            }).addTo(myMap);
 
         
-
+          // making a function for color schemes
           function getColor(d) {
             return d > 1000 ? '#ff8080' :
                    d > 500  ? '#BD0026' :
@@ -71,8 +82,11 @@ d3.json(poly_url).then(function(data_poly) {
                               '#FFEDA0';
         }
 
+
+        // defining the legend position
           var legend = L.control({position: 'bottomright'});
 
+        // function for making legend
           legend.onAdd = function () {
           
               var div = L.DomUtil.create('div', 'info legend');
@@ -90,20 +104,27 @@ d3.json(poly_url).then(function(data_poly) {
           
               return div;
             };
+
+            // adding the legend to map
             legend.addTo(myMap);
           
 
 
     }
 
-
+    // function to create markers
     function createMarkers(data_countries) {
-        let countryMarkers = [];
 
+    // making an empty list to store markers
+      let countryMarkers = [];
+
+      // for loop to go through data
         for (let i = 0; i < data_countries.length; i++) {
             var marker = "<strong>Name: <strong/>" + data_countries[i].country + "<br><strong>Total Year 2020 Emissions (mmt): </strong>" + data_countries[i].totCO2_2020 + "<br><strong> Rank: </strong>" + data_countries[i].rank;
             var latlng = L.latLng(data_countries[i].latitude, data_countries[i].longitude);
 
+
+            // making marker and pushing it into list
             countryMarkers.push(
                 L.circle(latlng, {
                   stroke: true,
@@ -115,13 +136,13 @@ d3.json(poly_url).then(function(data_poly) {
                 );
         }
 
+        // calling createMap function
         createMap(countryMarkers, data_countries, data_poly);
 
     
     }
 
+    // making API call to our chloropleth data source
     d3.json(url_1).then(createMarkers);
-
- 
           });
           
