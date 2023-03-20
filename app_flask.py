@@ -3,7 +3,6 @@ from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, func
 import json
-
 from flask import Flask, jsonify
 
 
@@ -11,8 +10,12 @@ from flask import Flask, jsonify
 engine = create_engine("sqlite:///Resources/database3.sqlite")
 engine_1 = create_engine("sqlite:///Resources/new_database.sqlite")
 
+
+# getting the data from our JSON file
 with open("Resources/countries.geojson") as json_file:
     polygons_data = json.load(json_file)
+    
+    
 # reflect an existing database into a new model
 Base = automap_base()
 Base1 = automap_base()
@@ -40,7 +43,7 @@ def welcome():
         f"/api/polygons<br/>"
     )
     
-##############
+##############################
 
 @app.route("/api/polygons")
 def polygons_list():
@@ -52,16 +55,25 @@ def polygons_list():
 
 
 
+##############################
+# making route for API requests
 @app.route("/api/countries")
 def country_list():
     session = Session(engine_1)
+    
+    
     # latitude,longitude,country,pop2023,growthRate,area,region,landAreaKm,totCO2_2017,totCO2_2020,co2PerCapita2017,co2PerCapita2020,rank,latlng
     results = session.query(Data.latitude, Data.longitude, Data.country, Data.pop2023, Data.growthRate, Data.area, Data.region,\
                                 Data.landAreaKm, Data.totCO2_2017, Data.totCO2_2020, Data.co2PerCapita2017, Data.co2PerCapita2020,\
                                     Data.rank, Data.latlng).all()
+    
+    # closing session
     session.close()
     
+    # making an empty list to add the data for json making
     all_data = []
+    
+    # for loop to go through all the columns
     for i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12, i13, i14 in results:
         
         countries_dict = {}
